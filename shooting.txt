@@ -1,0 +1,50 @@
+Algorithm:
+1. Start with the initial and final values: x1,y1,x2,y2.
+2. Set the step size h and the point at which to approximate the solution xn.
+3. Set initial slope s1 and convert given BVP into IVP and solve using any ODE method.
+4. Repeat step 3 with another slope s2.
+5. Find correct slope using interpolation method.
+6. using correct slope find y at given x.
+C code:
+#include <stdio.h>
+#include <math.h>
+#define TOLERANCE 1e-6 // Convergence tolerance
+#define H 0.1 // Step size
+// Function representing y'' = f(x, y, y')
+double f(double x) {
+return 6*x; // Example: y'' = 6x
+}
+// Function to solve IVP using Taylor Series Expansion
+double solve_IVP(double s, double a, double b, double alpha) {
+double x = a, y = alpha, yp = s, y_new, yp_new;
+// Iterating using Taylor series method
+while (x < b) {
+// Compute next values using Taylor series expansion
+y_new = y + H * yp + (H * H / 2.0) * f(x);
+yp_new = yp + H * f(x); // Update yp
+// Update values
+y = y_new;
+yp = yp_new;
+x += H;
+}
+
+return y; // Return computed y(b)
+}
+// Shooting Method using Secant Method for slope correction
+double shooting_method(double a, double b, double alpha, double beta) {
+double s1 = 2.0, s2 = 4.0; // Initial guesses for y'(a)
+double phi1 = solve_IVP(s1, a, b, alpha);
+double phi2 = solve_IVP(s2, a, b, alpha);
+double s_new = s2 - ((phi2 - beta) * (s2 - s1)) / (phi2 - phi1);
+
+return s_new; // Return correct initial slope
+}
+// Main function
+int main() {
+double x1 = 1.0, x2 = 2.0; // Interval [a, b]
+double y1 = 2.0, y2 = 9.0; // Boundary conditions
+// Find the correct initial slope y'(a)
+double correct_slope = shooting_method(x1, x2, y1, y2);
+printf("Computed initial slope y'(a) = %.6f\n", correct_slope);
+return 0;
+}
