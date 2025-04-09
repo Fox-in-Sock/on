@@ -1,0 +1,174 @@
+/* PROGRAMME TO IMPLEMENT GAUSS ELIMINATION METHOD */
+Objective: To find the solution of the system of linear equation by gauss elimination
+Theory: Briefly describe about the method with figure and formula whichever applicable.
+Steps:
+1. Write system of linear equation in the augmented matrix form
+2. Change the 1st element of 2nd , 3rd row and so on with the help of pivot element from 1st row.
+3. Convert the matrix in upper triangular form by row equivalent method.
+4. Find the value by back substitution method.
+C code:
+#include <stdio.h>
+#define N 3 // number of variables
+int main() {
+//creating an 2D ARRAY with N rows and N+1 coloumns
+float A[N][N+1] = { {3, 4, 5, 40},
+{1, 1, 1, 9},
+{2, -3, 4, 13} };
+
+// Gaussian elimination
+for (int k = 0; k < N; k++) { //selecting the row
+for (int i = k+1; i < N; i++) {
+float f = A[i][k] / A[k][k]; //finding the factor for row operation to make 0.
+for (int j = k+1; j <= N; j++) {
+A[i][j] = A[i][j] - f * A[k][j];// row operation for 2nd row and so on.
+}
+A[i][k] = 0;// making 1,2 of 1st column 0. you can also remove it.
+}
+}
+// Backward substitution
+float x[N];
+for (int i = N-1; i >= 0; i--) {
+x[i] = A[i][N]; //holding the constant term after the gauss elimination.
+for (int j = i+1; j < N; j++) {
+x[i] = x[i] - A[i][j] * x[j];
+}
+x[i] = x[i] / A[i][i];
+}
+// Print solution
+printf("Solution:\n");
+for (int i = 0; i < N; i++) {
+printf("x%d = %f\n", i, x[i]);
+}
+return 0;
+}
+Output: show the output
+Discussion and conclusion: shortly conclude your report.
+
+/* PROGRAMME TO IMPLEMENT GAUSS ELIMINATION METHOD BY PARTIAL PIVOTING*/
+Objective: To find the solution of the system of linear equation by gauss elimination using partial pivoting
+stategy.
+Theory: Briefly describe about the method with figure and formula whichever applicable.
+Steps: describe yourself in above style
+C code:
+#include <stdio.h>
+#include <math.h>
+#define N 3 // size of the system
+int main() {
+float A[N][N+1] = { {3, 2,-4, 3},
+{2, 3, 3, 15},
+{5,-3, 1, 14} };
+
+float x[N];
+int i, j, k;
+float max, temp, ratio;
+// Gaussian elimination with partial pivoting
+for (i = 0; i < N; i++) {
+max = fabs(A[i][i]);
+int max_row = i;
+// find the row with the largest pivot element
+for (j = i+1; j < N; j++) {
+if (fabs(A[j][i]) > max) {
+max = fabs(A[j][i]);
+max_row = j;
+}
+}
+// swap the current row with the row with the largest pivot element
+if (max_row != i) {
+for (k = 0; k < N+1; k++) {
+temp = A[i][k];
+A[i][k] = A[max_row][k];
+A[max_row][k] = temp;
+}
+}
+// perform Gaussian elimination
+for (j = i+1; j < N; j++) {
+ratio = A[j][i] / A[i][i];
+for (k = i; k < N+1; k++) {
+A[j][k] -= ratio * A[i][k];
+}
+}
+}
+// perform back-substitution to solve for the variables
+for (i = N-1; i >= 0; i--) {
+x[i] = A[i][N];
+for (j = i+1; j < N; j++) {
+x[i] -= A[i][j] * x[j];
+
+}
+x[i] /= A[i][i];
+}
+// print the solution
+printf("Solution:\n");
+for (i = 0; i < N; i++) {
+printf("x[%d] = %.2f\n", i, x[i]);
+}
+return 0;
+}
+
+Output: show the output
+Discussion and conclusion: write why partial pivoting might be necessary and in what case.
+
+/* PROGRAMME TO IMPLEMENT GAUSS JACOBI METHOD */
+
+Objective: To find the solution of the system of linear equation by gauss Jacobi method.
+Theory: Briefly describe about the method with figure and formula whichever applicable.
+Steps:
+1. Start
+2. Arrange given system of linear equations in diagonally dominant form
+3. Read tolerable error (e)
+4. Convert the first equation in terms of first variable, second equation in terms of second variable and
+so on.
+5. Set initial guesses for x0, y0, z0 and so on.
+6. Substitute value of x0, y0, z0 ... from step 5 in equation obtained in step 4 to calculate new values
+x1, y1, z1 and so on.
+7. If| x0 - x1| > e and | y0 - y1| > e and | z0 - z1| > e and so on then goto step 9
+8. Set x0=x1, y0=y1, z0=z1 and so on and goto step 6
+9. Print value of x1, y1, z1 and so on.
+10. Stop
+C code:
+#include<stdio.h>
+#include<conio.h>
+#include<math.h>
+/* Arrange systems of linear quations to be solved in diagonally dominant form and form
+equation for each unknown and define here
+*/
+/* Arranging given system of linear equations in diagonally dominant form:
+20x + y - 2z = 17
+3x + 20y -z = -18
+2x - 3y + 20z = 25
+
+*/
+/* Defining function */
+#define f1(x,y,z) (17-y+2*z)/20
+#define f2(x,y,z) (-18-3*x+z)/20
+#define f3(x,y,z) (25-2*x+3*y)/20
+
+int main()
+{
+float x0=0, y0=0, z0=0, x1, y1, z1, e1, e2, e3, e; //declaring variable with initial
+guess...
+int count=1;
+printf("Enter tolerable error:\n");
+scanf("%f", &e);
+printf("\nCount\tx\ty\tz\n");
+do
+{
+/* Calculation */
+x1 = f1(x0,y0,z0);
+y1 = f2(x0,y0,z0);
+z1 = f3(x0,y0,z0);
+printf("%d\t%0.4f\t%0.4f\t%0.4f\n",count, x1,y1,z1);
+/* Error */
+e1 = fabs(x0-x1); //fabs is absolute value..
+e2 = fabs(y0-y1);
+e3 = fabs(z0-z1);
+count++;
+/* Set value for next iteration */
+x0 = x1;
+y0 = y1;
+z0 = z1;
+}while(e1>e && e2>e && e3>e);
+printf("\nSolution: x=%0.3f, y=%0.3f and z = %0.3f\n",x1,y1,z1);//precision upto 3
+decimal places
+return 0;
+}
