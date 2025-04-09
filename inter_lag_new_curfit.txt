@@ -1,0 +1,221 @@
+/*PROGRAMME TO IMPLEMENT LAGRANGE INTERPOLATION*/
+OBJECTIVE: The objective is to implement Lagrange interpolation using c language.
+THEORY: write down what is interpolation and for what type of data Lagrange interpolation is used? Also
+write down the formula.
+ALGORITHM:
+Given a set of n data points (x[0], y[0]), (x[1], y[1]), ..., (x[n-1], y[n-1]) and a value xi to interpolate:
+1. Initialize result to zero.
+2. For i in the range 0 to n-1, do the following:
+a. Initialize P to 1.
+b. For j in the range 0 to n-1, do the following:
+c. If j is not equal to i, then multiply P by (xi - x[j]) / (x[i] - x[j]).
+d. Multiply L by y[i] * P.
+e. Add L to result.
+3. Return result.
+C code:
+/*programme to implement lagrange interpolation*/
+#include <stdio.h>
+double lagrange_interp(double x[], double y[], int n, double xi) {
+double L, P = 1, result = 0;
+int i, j;
+for (i = 0; i < n; i++) {
+P = 1;
+for (j = 0; j < n; j++) {
+if (j != i) {
+P *= (xi - x[j]) / (x[i] - x[j]);//for i=0; it calculate the first term of polynomial and //for i=1 second
+term and so on.....
+}
+}
+L = y[i] * P;
+result += L;// add the individual term and append to result.
+}
+return result;
+}
+int main() {
+int n, i;
+double xi;
+printf("Enter the number of data points: ");
+scanf("%d", &n);
+double x[n], y[n];
+for (i = 0; i < n; i++) {
+printf("Enter x[%d] and y[%d]: ", i, i);
+scanf("%lf %lf", &x[i], &y[i]);
+}
+printf("Enter the value to interpolate: ");
+scanf("%lf", &xi);
+double result = lagrange_interp(x, y, n, xi);//function call
+printf("Interpolated value at %f is %f", xi, result);
+return 0;
+}
+
+Output: show the output
+Discussion and conclusion: can it be used for equal interval data points? Discuss and conclude your report.
+/*PROGRAMME TO IMPLEMENT NEWTONS FORWARD INTERPOLATION*/
+OBJECTIVE: The objective is to implement Newton’s forward interpolation using c language.
+THEORY: write down what is forward interpolation and for what type of data interpolation it is used? Also
+write down the formula.
+ALGORITHM:
+Inputs:
+n: Number of data points
+x[0], x[1], ..., x[n-1]: Array of x-coordinates
+y[0], y[1], ..., y[n-1]: Array of y-coordinates
+x0: Value of x for which y is to be found
+Steps:
+Calculate the forward difference table:
+a. Initialize an (n-1) x (n-1) array called "forward" to store the forward differences
+b. For j = 0 to n-2:
+i. For i = 0 to n-j-2:
+1. If j = 0, set forward[i][j] = y[i+1] - y[i]
+2. Else, set forward[i][j] = forward[i+1][j-1] - forward[i][j-1]
+3. Calculate the value of y at x=x0 using Newton's Forward Interpolation formula:
+a. Set y0 = y[0]
+b. Set u = (x0 - x[0]) / (x[1] - x[0])
+c. For j = 1 to n-1:
+i. Set term = (u * forward[0][j-1]) / j!
+ii. Add term to y0
+iii. Set u = u * (x0 - x[j]) / (x[j+1] - x[j])
+4. Return y0 as the result.
+C code:
+#include <stdio.h>
+// Function to calculate factorial
+int factorial(int n) {
+int fact = 1;
+for (int i = 1; i <= n; i++) {
+fact *= i;
+}
+return fact;
+}
+// Function to perform Newton's Forward Interpolation
+float newtonForwardInterpolation(int n, float x[], float y[], float x0) {
+float y0 = y[0], u = (x0-x[0])/(x[1]-x[0]);
+float forward[n-1][n-1];
+// Calculating the forward difference table
+for (int j = 0; j < n-1; j++) {
+for (int i = 0; i < n-j-1; i++) {
+if (j == 0) {
+
+forward[i][j] = y[i+1] - y[i];
+} else {
+forward[i][j] = forward[i+1][j-1] - forward[i][j-1];
+}
+}
+}
+// Printing the forward difference table
+printf("Forward Difference Table:\n");
+printf("\n");
+for (int i = 0; i < n-1; i++) {
+printf("%.4f\t", forward[i][0]);
+for (int j = 1; j < n-i-1; j++) {
+printf("%.4f\t", forward[i][j]);
+}
+printf("\n");
+}
+// Applying Newton's Forward Interpolation formula
+for (int j = 1; j < n; j++) {
+y0 += (u*forward[0][j-1])/factorial(j);
+u *= (x0-x[j])/(x[j+1]-x[j]);
+}
+return y0;
+}
+int main() {
+int n; // Number of data points
+printf("Enter the number of data points: ");
+scanf("%d", &n);
+float x[n], y[n]; // Arrays to store the data points
+// Taking input for x and y arrays
+for (int i = 0; i < n; i++) {
+printf("Enter x[%d] and y[%d]: ", i, i);
+scanf("%f %f", &x[i], &y[i]);
+}
+float x0; // Value of x for which we need to find y
+printf("Enter the value of x for which y is to be found: ");
+scanf("%f", &x0);
+// Calling the newtonForwardInterpolation function
+float y0 = newtonForwardInterpolation(n, x, y, x0);
+// Printing the result
+printf("The value of y at x = %.2f is %.2f\n", x0, y0);
+return 0;
+}
+
+Output: show the output
+Discussion and conclusion: can it be used for unequal interval data points? Discuss and conclude your
+report.
+Exercise: implement backward interpolation with reference to above code.
+
+/*PROGRAMME TO IMPLEMENT LINEAR CURVE FITTING OF y=a+bx*/
+OBJECTIVE: The objective is to find the best fit linear curve of y=a+bx using c language.
+THEORY: define curve fitting and least square method for curve fitting. Also write normal equation for for
+it.
+ALGORITHM:
+1. Read data value.
+2. Compute sum of power and products.
+3. Check whether denominator of equation for ‘a’ is zero.
+4. Print out the equation.
+C code:
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+void linear_fit(double x[], double y[], int n, double *a, double *b)
+{
+double sum_x = 0, sum_y = 0, sum_xy = 0, sum_xx = 0;
+int i;
+for (i = 0; i < n; i++) {
+sum_x += x[i];
+sum_y += y[i];
+sum_xy += x[i] * y[i];
+sum_xx += x[i] * x[i];
+}
+double delta = n * sum_xx - sum_x * sum_x;
+if (delta == 0) {
+printf("Cannot fit a line\n");
+exit(1);
+}
+*a = (n * sum_xy - sum_x * sum_y) / delta;
+*b = (sum_y - *a * sum_x) / n;
+}
+int main()
+{
+double x[] = {1, 2, 3, 4, 6, 8};//enter the value of X
+double y[] = {2.4, 3, 3.6, 4, 5, 6};//enter the value of Y
+int n;
+printf("enter the number of data points: ");
+scanf("%d",&n);
+double a, b;
+
+linear_fit(x, y, n, &a, &b);
+printf("a = %f, b = %f\n", a, b);
+printf("the best curve fit is y = %f + %f x",a,b);
+return 0;
+}
+
+Output: show the output
+Discussion and conclusion: what is error and how it is reduced by least square method? Discuss and
+conclude your report.
+
+/* PROGRAMME TO IMPLEMENT CURVE OF TYPE y=a * x^b */
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#define N 4 // number of data points
+double power(double x, double y)
+{
+return pow(x, y);
+}
+int main()
+{
+double x[N] = {61,26,7,2.6}; // x values
+double y[N] = {350, 400, 500, 600}; // y values
+double sum_x = 0.0, sum_y = 0.0, sum_xy = 0.0, sum_xx = 0.0;
+double a, b;
+int i;
+for (i = 0; i < N; i++) {
+sum_x += log(x[i]);
+sum_y += log(y[i]);
+sum_xy += log(x[i]) * log(y[i]);
+sum_xx += log(x[i]) * log(x[i]);
+}
+b = (N * sum_xy - sum_x * sum_y) / (N * sum_xx - sum_x * sum_x);
+a = exp((sum_y - b * sum_x) / N);
+printf("y = %.2f * x^%.2f\n", a, b);
+return 0;
+}
